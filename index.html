@@ -1,0 +1,77 @@
+<html>
+<head><script src="/gdpr/gdprscript.js?buildTime=1725474968"></script>
+    <meta charset="UTF-8">
+    <title>Feed RSS</title>
+    <style>
+      body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#feed {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#feed li {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    max-width: 600px;
+    text-align: left;
+}
+
+#feed li h2 {
+    margin: 0;
+}
+
+#feed li p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+#feed li img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+  </style>
+</head>
+<body>
+  <center><h1>Daily Horoscope</h1></center>
+    <ul id="feed"></ul>
+
+    <script>
+        fetch('https://api.allorigins.win/raw?url=https://feeds.feedburner.com/dayhoroscope')
+            .then(response => response.text())
+            .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+            .then(data => {
+                const items = data.querySelectorAll("item");
+                let html = "";
+                items.forEach(item => {
+                  
+                    const title = item.querySelector("title").textContent;
+                    const link = item.querySelector("link").textContent;
+                    const description = item.querySelector("description").textContent;
+                    
+                    const pubDate = item.querySelector("pubDate").textContent;
+                    const image = item.querySelector("enclosure")?.getAttribute("url") || "";
+                    html += `
+                        <li>
+                        ${image ? `<img src="${image}" alt="${title}"/>` : ""}
+                            <h2><a href="${link}" target="_blank">${title}</a></h2>
+                            <p>${description}</p>
+                            
+                            <p><strong>Data:</strong> ${pubDate}</p>
+                            
+                        </li>
+                    `;
+                });
+                document.querySelector("#feed").innerHTML = html;
+            });
+    </script>
+</body>
+</html>
